@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Databricks bundle local state — NEVER commit this
+.databricks/
+
+# dbt
+dbt_packages/
+target/
+logs/
+
+# environment/secrets
+.env
+.databrickscfg
+
+# OS noise
+.DS_Store
