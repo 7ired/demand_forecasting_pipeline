@@ -16,12 +16,15 @@ dev = [
     "pytest",
     "ruff",
     "databricks-dlt",
-    "databricks-connect>=15.4,<15.5",
+    "databricks-connect>=17.3,<17.4",
     "ipykernel",
 ]
 
 [project.scripts]
-main = "my_project.main:main"
+main = "ingestion.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ingestion"]
 
 [build-system]
 requires = ["hatchling"]
