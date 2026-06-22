@@ -14,8 +14,8 @@ params_historic = {
     "longitude": 9.486,
     "start_date": "2022-01-01",
     "end_date": (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"),
-    "daily": ["temperature_2m_max", "temperature_2m_min", "precipitation_sum", "temperature_2m_mean"],
-    "timezone": "Europe/Berlin",
+    "daily": ["temperature_2m_max", "temperature_2m_min", "precipitation_sum"],
+    "timezone": "Europe/Zurich",
 }
 
 url_now = "https://api.open-meteo.com/v1/forecast"
@@ -24,20 +24,15 @@ params_now = {
     "longitude": 9.486,
     "daily": ["temperature_2m_max", "temperature_2m_min", "precipitation_sum"],
     "models": "meteoswiss_icon_ch1",
-    "timezone": "Europe/Berlin",
-    "forecast_days": 1,
+    "timezone": "Europe/Zurich",
+    "forecast_days": 2,  # index 0 = today, index 1 = tomorrow
 }
 
 
 def get_weather(url, params):
     responses = openmeteo.weather_api(url=url, params=params)
     response = responses[0]
-
     daily = response.Daily()
-
-    daily_temperature_2m_max = daily.Variables(0).ValuesAsNumpy()
-    daily_temperature_2m_min = daily.Variables(1).ValuesAsNumpy()
-    daily_precipitation_sum = daily.Variables(2).ValuesAsNumpy()
 
     daily_data = {
         "date": pd.date_range(
@@ -48,10 +43,17 @@ def get_weather(url, params):
         ).tz_convert(response.Timezone().decode())
     }
 
-    daily_data["temperature_2m_max"] = daily_temperature_2m_max
-    daily_data["temperature_2m_min"] = daily_temperature_2m_min
-    daily_data["precipitation_sum"] = daily_precipitation_sum
+    for i, var_name in enumerate(params["daily"]):
+        daily_data[var_name] = daily.Variables(i).ValuesAsNumpy()
 
     forecast = pd.DataFrame(data=daily_data)
 
     return forecast
+
+
+forecast_df = get_weather(url_now, params_now)
+forecast_df["forecast_made_at"] = pd.Timestamp.now(tz="Europe/Zurich").normalize()
+forecast_df["model"] = params_now["models"]
+
+historic_df = get_weather(url_historic, params_historic)
+historic_df["model"] = "best_match"
