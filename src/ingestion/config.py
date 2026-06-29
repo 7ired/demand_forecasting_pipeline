@@ -5,7 +5,6 @@ LONGITUDE = 9.486
 BACKFILL_START_DATE = "2022-01-01"
 WEATHER_DAILY_VARS = ["temperature_2m_max", "temperature_2m_min", "precipitation_sum"]
 TIMEZONE = "Europe/Zurich"
-MODELS = "meteoswiss_icon_ch1"
 URL_ENTSOE = "https://web-api.tp.entsoe.eu/api"
 DOCUMENT_TYPE = "A65"
 PROCESS_TYPE = "A16"

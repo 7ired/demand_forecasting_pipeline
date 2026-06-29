@@ -4,7 +4,7 @@ import requests
 import xml.etree.ElementTree as ET
 from isodate import parse_duration
 import pandas as pd
-from . import config
+from ingestion import config
 
 w = WorkspaceClient()
 api_key = w.dbutils.secrets.get(scope="demand_pipeline", key="entsoe-api-key")
@@ -41,9 +41,9 @@ def get_historic_load(start_date: str, end_date: str) -> pd.DataFrame:
 
         params = {
             "securityToken": api_key,
-            "documentType": "A65",
-            "processType": "A16",
-            "outBiddingZone_Domain": "10YCH-SWISSGRIDZ",
+            "documentType": config.DOCUMENT_TYPE,
+            "processType": config.PROCESS_TYPE,
+            "outBiddingZone_Domain": config.OUT_BIDDING_ZONE_DOMAIN,
             "periodStart": current_start.strftime("%Y%m%d%H%M"),
             "periodEnd": chunk_end.strftime("%Y%m%d%H%M"),
         }
@@ -64,9 +64,9 @@ def get_latest_load() -> pd.DataFrame:
 
     params = {
         "securityToken": api_key,
-        "documentType": "A65",
-        "processType": "A16",
-        "outBiddingZone_Domain": "10YCH-SWISSGRIDZ",
+        "documentType": config.DOCUMENT_TYPE,
+        "processType": config.PROCESS_TYPE,
+        "outBiddingZone_Domain": config.OUT_BIDDING_ZONE_DOMAIN,
         "periodStart": yesterday.strftime("%Y%m%d0000"),
         "periodEnd": date.today().strftime("%Y%m%d0000"),
     }

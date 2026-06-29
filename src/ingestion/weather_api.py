@@ -3,8 +3,7 @@ import pandas as pd
 from retry_requests import retry
 import requests_cache
 from datetime import datetime, timedelta
-
-# TODO: Replace hardcoded values with values from config.py
+from ingestion import config
 
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
@@ -12,21 +11,21 @@ openmeteo = openmeteo_requests.Client(session=retry_session)
 
 url_historic = "https://archive-api.open-meteo.com/v1/archive"
 params_historic = {
-    "latitude": 47.1221,
-    "longitude": 9.486,
-    "start_date": "2022-01-01",
+    "latitude": config.LATITUDE,
+    "longitude": config.LONGITUDE,
+    "start_date": config.BACKFILL_START_DATE,
     "end_date": (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"),
-    "daily": ["temperature_2m_max", "temperature_2m_min", "precipitation_sum"],
-    "timezone": "Europe/Zurich",
+    "daily": config.WEATHER_DAILY_VARS,
+    "timezone": config.TIMEZONE,
 }
 
 url_forecast = "https://api.open-meteo.com/v1/forecast"
 params_forecast = {
-    "latitude": 47.1221,
-    "longitude": 9.486,
-    "daily": ["temperature_2m_max", "temperature_2m_min", "precipitation_sum"],
+    "latitude": config.LATITUDE,
+    "longitude": config.LONGITUDE,
+    "daily": config.WEATHER_DAILY_VARS,
     "models": "meteoswiss_icon_ch1",
-    "timezone": "Europe/Zurich",
+    "timezone": config.TIMEZONE,
     "forecast_days": 2,  # index 0 = today, index 1 = tomorrow
 }
 
